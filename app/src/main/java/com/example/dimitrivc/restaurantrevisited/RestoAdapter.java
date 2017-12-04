@@ -32,14 +32,18 @@ public class RestoAdapter extends ResourceCursorAdapter {
         one.setText(name2);
 
         Integer name3 = cursor.getColumnIndex("price");
-        Log.d("string_price", String.valueOf(name3));
-        Integer name4 = cursor.getInt(name3);
-        two.setText(String.valueOf(name4));
+
+        Double name4 = cursor.getDouble(name3);
+        //Log.d("string_price", String.valueOf(name4));
+
+        two.setText(" $" + String.valueOf(name4));
 
         Integer name5 = cursor.getColumnIndex("amount");
-        Log.d("string_amon", String.valueOf(name5));
+
         Integer name6 = cursor.getInt(name5);
-        three.setText(String.valueOf(name6));
+        //Log.d("string_amon", String.valueOf(name6));
+
+        three.setText(" No." + String.valueOf(name6));
 
     }
 }

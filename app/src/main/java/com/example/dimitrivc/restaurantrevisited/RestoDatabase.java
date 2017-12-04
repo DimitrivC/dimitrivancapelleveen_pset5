@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 /**
  * Created by DimitrivC on 29-11-2017.
@@ -23,7 +24,7 @@ public class RestoDatabase extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
 
-        sqLiteDatabase.execSQL("CREATE TABLE orders (_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, price DOUBLE, amount INT);");
+        sqLiteDatabase.execSQL("CREATE TABLE orders (_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT, price DOUBLE, amount INT);");
 
     }
 
@@ -97,21 +98,32 @@ public class RestoDatabase extends SQLiteOpenHelper {
 
         boolean order_existence = false;
 
-        Double name4 = 0.0;
-        Integer name5 = 0;
+        Double itemAmount = 0.0;
+        Integer itemID = 0;
+        Double itemPrice = 0.0;
+
+        Integer price_in_db = 0;
 
         if (cursor.moveToFirst()){
             while (!cursor.isAfterLast()){
-                Integer name = cursor.getColumnIndex("name");
-                String name2 = cursor.getString(name);
+                Integer intNameColumn = cursor.getColumnIndex("name");
+                String nameColumn = cursor.getString(intNameColumn);
 
-                if (name2.equals(namePosition)){
+
+
+                if (nameColumn.equals(dishName)){
                     order_existence = true;
 
-                    name5 = cursor.getColumnIndex("_id");
+                    itemID = cursor.getInt(0);
+                    Log.d("itemID", String.valueOf(itemID));
 
-                    Integer name3 = cursor.getColumnIndex("amount");
-                    name4 = cursor.getDouble(name3);
+                    Integer intAmountColumn = cursor.getColumnIndex("amount");
+                    itemAmount = cursor.getDouble(intAmountColumn);
+                    Log.d("itemAmount test", String.valueOf(itemAmount));
+
+                    Integer intPriceColumn = cursor.getColumnIndex("price");
+                    itemPrice = cursor.getDouble(intPriceColumn);
+                    Log.d("intPriceColumn", String.valueOf(itemPrice));
                 }
 
                 cursor.moveToNext();
@@ -120,23 +132,50 @@ public class RestoDatabase extends SQLiteOpenHelper {
 
         ContentValues contentValues = new ContentValues();
 
+        Log.d("name4_test2", String.valueOf(itemAmount));
+
         // if the order exists: update
         if (order_existence == true) {
-            Double new_amount = name4 +=1;
-            contentValues.put("amount", new_amount);
+            Log.d("if_order_existence_true", "gafh");
 
-            db.update("orders", contentValues, "_id = " + name5, null);
+            Log.d("itemAmount", String.valueOf(itemAmount));
+            itemAmount +=1;
+            Log.d("new_amount", String.valueOf(itemAmount));
+            contentValues.put("amount", itemAmount);
+
+            Double new_price = itemPrice + dishPrice;
+            Log.d("insert itemPrice", String.valueOf(itemPrice));
+            Log.d("insert dishPrice", String.valueOf(dishPrice));
+            // het optellen gaat goed.
+            Log.d("insert new_price", String.valueOf(new_price));
+
+            contentValues.put("price", new_price);
+
+            // denk dat het hier misgaat: het gaat niet in de db.
+            int test = db.update("orders", contentValues, "_id =" + itemID, null);
+            Log.d("itemID update", Integer.toString(itemID));
+            Log.d("return value insert", Integer.toString(test));
 
         }
         // if the order doesn't exist: insert
         else if (order_existence == false) {
-
+            Log.d("if_order_doesnt exist", "dgahh");
             contentValues.put("name", dishName);
             contentValues.put("price", dishPrice);
             contentValues.put("amount", 1);
 
             db.insert("orders", null, contentValues);
 
+            // OM TE ERROR CHECKEN:
+            if (cursor.moveToFirst()){
+                while (!cursor.isAfterLast()){
+                    Integer intNameColumn = cursor.getColumnIndex("name");
+                    String nameColumn = cursor.getString(intNameColumn);
+                    Log.d("nameColumn", nameColumn);
+
+                    cursor.moveToNext();
+                }
+            } ///
         }
 
     // EINDE INSERT
@@ -147,12 +186,7 @@ public class RestoDatabase extends SQLiteOpenHelper {
 
         SQLiteDatabase db = getWritableDatabase();
 
-        // dit?
-        //db.delete("orders", null, null);
-        // maar delete dit niet de hele table?
-
-        // of dit? dit lijkt logischer.
-        db.execSQL("delete from orders");
+        db.delete("orders", null, null);
     }
 
 

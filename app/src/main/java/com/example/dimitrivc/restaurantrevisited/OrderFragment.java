@@ -1,12 +1,15 @@
 package com.example.dimitrivc.restaurantrevisited;
 
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,14 +23,13 @@ import android.widget.TextView;
  * A simple {@link Fragment} subclass.
  */
 public class OrderFragment extends DialogFragment implements View.OnClickListener{
-// class must either be declared abstract or
     // step 10: implements...:
+
+    private RestoAdapter adapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //SQLiteDatabase db = this.getWritableDatabase();
-
     }
 
     // step 9
@@ -39,7 +41,7 @@ public class OrderFragment extends DialogFragment implements View.OnClickListene
         RestoDatabase db = RestoDatabase.getInstance(getActivity().getApplicationContext());
         Cursor cursor = db.selectAll();
 
-        RestoAdapter adapter = new RestoAdapter(getActivity().getApplicationContext(), R.layout.fragment_order, cursor, 0);
+        adapter = new RestoAdapter(getActivity().getApplicationContext(), R.layout.fragment_order, cursor, 0);
         final ListView listCategories = getView().findViewById(R.id.listOrders);
 
         listCategories.setAdapter(adapter);
@@ -52,18 +54,15 @@ public class OrderFragment extends DialogFragment implements View.OnClickListene
 
         View inflated = inflater.inflate(R.layout.fragment_order, container, false);
 
-        // step 10:
         Button b = inflated.findViewById(R.id.button);
         b.setOnClickListener(this);
 
-        Button c = (Button) inflated.findViewById(R.id.button2);
+        Button c = inflated.findViewById(R.id.button2);
         c.setOnClickListener(this);
-            // einde step 10
-
 
         // Inflate the layout for this fragment
         Log.d("yfugihj", "onCreateView: ");
-        return inflater.inflate(R.layout.fragment_order, container, false);
+        return inflated;
     }
 
 
@@ -71,19 +70,34 @@ public class OrderFragment extends DialogFragment implements View.OnClickListene
     @Override
     public void onClick(View view) {
 
-        Log.d("onclick", "hoi");
+        RestoDatabase db = RestoDatabase.getInstance(getActivity().getApplicationContext());
 
         switch (view.getId()) {
             // if order is placed
-            case R.id.button:
-                TextView textBox = view.findViewById(R.id.textView);
-                textBox.setText("Your order has been placed (but not for real...)");
 
+            case R.id.button:
+
+                final ListView listCategories = getView().findViewById(R.id.listOrders);
+
+                Intent intent = new Intent(getActivity().getApplicationContext(), Main2Activity.class);
+
+                if (listCategories.getCount() == 0) {
+                    intent.putExtra("EXTRA", "No orders yet!");
+                }
+                else {
+                    intent.putExtra("EXTRA", "Your order has been placed! :)");
+                }
+
+                String testIntent = intent.getStringExtra("EXTRA");
+                Log.d("testIntent", testIntent);
+
+                startActivity(intent);
                 break;
             // if order is canceled
             case R.id.button2:
-                RestoDatabase db = RestoDatabase.getInstance(getActivity().getApplicationContext());
                 db.clearOrders();
+                Cursor cursor2 = db.selectAll();
+                adapter.swapCursor(cursor2);
                 break;
         }
     }

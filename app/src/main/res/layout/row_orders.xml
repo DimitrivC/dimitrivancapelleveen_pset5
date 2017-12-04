@@ -9,19 +9,19 @@ android:orientation="horizontal"
 android:id="@+id/linLayRowOrders">
 
 <TextView android:id="@+id/text1"
-android:layout_width="match_parent"
+android:layout_width="wrap_content"
 android:layout_height="match_parent"
 android:textColor="@color/colorAccent"
 android:text="dfhdh" />
 
 <TextView android:id="@+id/text2"
-android:layout_width="match_parent"
+android:layout_width="wrap_content"
 android:layout_height="match_parent"
     android:textColor="@color/colorAccent"
 android:text="fhsu" />
 
 <TextView android:id="@+id/text3"
-android:layout_width="match_parent"
+android:layout_width="wrap_content"
 android:layout_height="match_parent"
     android:textColor="@color/colorAccent"
 android:text="ery" />

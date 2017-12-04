@@ -87,6 +87,13 @@ public class MainActivity extends AppCompatActivity {
         // removes all orders from database
         RestoDatabase db = RestoDatabase.getInstance(getApplicationContext());
         db.clearOrders();
+
+        // om het venster te refreshen nadat
+//        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+//        OrderFragment fragment = new OrderFragment();
+//        fragment.show(ft, "dialog");
+        // of: (maar nee)
+        //viewpager.setOffscreenPageLimit(1);
     }
 
 
